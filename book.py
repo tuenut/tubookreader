@@ -5,7 +5,7 @@ class FB2ParserMixin:
     _namespace = None
     _attributes = dict()
 
-    def __init__(self, namespace):
+    def __init__(self, namespace, *args, **kwargs):
         self._namespace = namespace
 
     @staticmethod
@@ -14,6 +14,19 @@ class FB2ParserMixin:
             return element if element.attrib else element.text.strip()
 
         return element.getchildren() if len(element.getchildren()) > 1 else element.getchildren()[0]
+
+    def element_to_string(self, element):
+        result = list()
+        result.append(element.text.strip())
+
+        for el in element.getchildren():
+            if not el.getchildren():
+                result.append(el.text.strip())
+            else:
+                result.extend(self.element_to_string(el))
+        result.append(element.tail.strip())
+
+        return result
 
     def __attributes_control(self, attribute_name):
         if attribute_name in self._attributes:
@@ -100,12 +113,12 @@ class FB2Description:
     def __init__(self, namespace):
         self._namespace = namespace
 
-    def configure(self, element):
         self.title_info = self._title_info_class(self._namespace)
         self.document_info = self._document_info_class(self._namespace)
         self.publish_info = self._publish_info_class(self._namespace)
         self.custom_info = self._custom_info_class(self._namespace)
 
+    def configure(self, element):
         self.title_info.configure(element.find(etree.QName(self._namespace, 'title-info')))
         self.document_info.configure(element.find(etree.QName(self._namespace, 'document-info')))
         self.publish_info.configure(element.find(etree.QName(self._namespace, 'publish-info')))
@@ -120,33 +133,26 @@ class FB2Body(FB2ParserMixin):
         section={'required': True, 'only_one': False},
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.sections = list()
 
     def configure(self, element):
-        if element is None:
-            return
+        self.sections = list()
 
-        for el in element.getchildren():
-            parsed_data = self.parse_element(el)
-            clear_tag_name = el.tag.replace('{%s}' % self._namespace, '').replace('-', '_')
-
-            if not self.__attributes_control(clear_tag_name):
-                continue
-
-            try:
-                if isinstance(parsed_data, (list, tuple, set)):
-                    getattr(self, clear_tag_name, ).extend(parsed_data)
-                else:
-                    getattr(self, clear_tag_name, ).append(parsed_data)
-            except AttributeError:
-                setattr(self, clear_tag_name, parsed_data)
-            except TypeError:
-                attribute_value = getattr(self, clear_tag_name, )
-                setattr(self, clear_tag_name, [attribute_value, parsed_data])
+        for section in element.findall(etree.QName(self._namespace, 'section')):
+            title = section.find(etree.QName(self._namespace, 'title'))
+            if title is not None:
+                self.sections.append((' '.join(self.element_to_string(title)).strip(), section))
+            else:
+                self.sections.append((None, section))
 
 
 class FB2BookClass:
     _description_class = FB2Description
     _body_class = FB2Body
+    _notes_class = None
     _binary_class = None
 
     def __init__(self, file_name):
@@ -155,6 +161,8 @@ class FB2BookClass:
 
         self.description = self._description_class(self._namespace)
         self.body = self._body_class(self._namespace)
+        self.notes = None
+        self.binaries = None
 
         self.description.configure(self.book_etree.find(etree.QName(self._namespace, 'description')))
         self.body.configure(self.book_etree.find(etree.QName(self._namespace, 'body')))

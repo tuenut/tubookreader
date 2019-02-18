@@ -1,9 +1,9 @@
-# PrettyPrinter
-import pprint
-pp = pprint.PrettyPrinter(indent=4, depth=10, )
-
 from book import FB2BookClass
 from locals import *
+
+# PrettyPrinter
+import pprint
+pp = pprint.PrettyPrinter(indent=4, depth=10, width=180)
 
 
 def get_instance_vals(instance):
@@ -28,25 +28,3 @@ pp.pprint(get_instance_vals(fb2.description.custom_info))
 pp.pprint(get_instance_vals(fb2.body))
 
 
-
-## TODO для парсинга секций боди
-def element_to_string(element):
-    result = list()
-    result.append(element.text.strip())
-
-    for el in element.getchildren():
-        if not el.getchildren():
-            result.append(el.text.strip())
-        else:
-            result.extend(element_to_string(el))
-    result.append(element.tail.strip())
-
-    return result
-
-
-table_of_contents = list()
-
-for section in body.findall(etree.QName(namespace, 'section')):
-    title = section.find(etree.QName(namespace, 'title'))
-    if section.find(etree.QName(namespace, 'title')):
-        table_of_contents.append((' '.join(element_to_string(title)).strip(), section))
