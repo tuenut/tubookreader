@@ -10,12 +10,13 @@ class FB2ParserMixin:
 
     @staticmethod
     def parse_element(element):
-        if not element.getchildren():
+        children = element.getchildren()
+        if not children:
             return element if element.attrib else element.text.strip()
 
-        return element.getchildren() if len(element.getchildren()) > 1 else element.getchildren()[0]
+        return children if len(children) > 1 else children[0]
 
-    def __attributes_control(self, attribute_name):
+    def _attributes_control(self, attribute_name):
         if attribute_name in self._attributes:
             return True
         else:
@@ -29,7 +30,8 @@ class FB2ParserMixin:
             parsed_data = self.parse_element(el)
             clear_tag_name = el.tag.replace('{%s}' % self._namespace, '').replace('-', '_')
 
-            if not self.__attributes_control(clear_tag_name):
+
+            if not self._attributes_control(clear_tag_name):
                 continue
 
             try:
@@ -86,7 +88,7 @@ class FB2PublishInfo(FB2ParserMixin):
 
 
 class FB2CustomInfo(FB2ParserMixin):
-    def __attributes_control(self, attribute_name):
+    def _attributes_control(self, attribute_name):
         return True
 
 
@@ -119,29 +121,38 @@ class FB2Body(FB2ParserMixin):
         epigraph={'required': False, 'only_one': False},
         section={'required': True, 'only_one': False},
     )
+    image = None
+    title = None
+    epigraph = None
+    table_of_contents = list()
 
-
-    def configure(self, element):
-        if element is None:
-            return
+    def element_to_string(self, element):
+        result = list()
+        if element.text.strip():
+            result.append(element.text.strip())
 
         for el in element.getchildren():
-            parsed_data = self.parse_element(el)
-            clear_tag_name = el.tag.replace('{%s}' % self._namespace, '').replace('-', '_')
+            if not el.getchildren():
+                result.append(el.text.strip())
+            else:
+                result.extend(self.element_to_string(el))
+        if element.tail.strip():
+            result.append(element.tail.strip())
 
-            if not self.__attributes_control(clear_tag_name):
-                continue
+        return result
 
-            try:
-                if isinstance(parsed_data, (list, tuple, set)):
-                    getattr(self, clear_tag_name, ).extend(parsed_data)
-                else:
-                    getattr(self, clear_tag_name, ).append(parsed_data)
-            except AttributeError:
-                setattr(self, clear_tag_name, parsed_data)
-            except TypeError:
-                attribute_value = getattr(self, clear_tag_name, )
-                setattr(self, clear_tag_name, [attribute_value, parsed_data])
+    def configure(self, body):
+        if body is None:
+            return
+
+        self.image = body.find(etree.QName(self._namespace, 'image'))
+        self.title = body.find(etree.QName(self._namespace, 'title'))
+        self.epigraph = body.find(etree.QName(self._namespace, 'epigraph'))
+
+        for section in body.findall(etree.QName(self._namespace, 'section')):
+            title = section.find(etree.QName(self._namespace, 'title'))
+            if section.find(etree.QName(self._namespace, 'title')) is not None:
+                self.table_of_contents.append((' '.join(self.element_to_string(title)).strip(), section))
 
 
 class FB2BookClass:
