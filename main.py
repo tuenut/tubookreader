@@ -1,29 +1,27 @@
-from book import FB2BookClass
-from locals import *
+import sys
 
+from backend.book import FB2Book
+from frontend import start_gui
 
 # PrettyPrinter
 import pprint
 pp = pprint.PrettyPrinter(indent=4, depth=10, width=140)
 
-
-def get_instance_vals(instance):
-    vals = dict()
-    for key in dir(instance):
-        if not key.startswith('_') and not callable(getattr(instance, key)):
-            try:
-                if len(getattr(instance, key)) > 0:
-                    vals.update({key: getattr(instance, key)})
-            except TypeError:
-                if getattr(instance, key):
-                    vals.update({key: getattr(instance, key)})
-    return vals
+from utils import get_instance_vals
 
 
-fb2 = FB2BookClass(TEST_BOOK)
+def __open_file_test():
+    try:
+        fb2 = FB2Book(sys.argv[1])
+    except:
+        raise
 
-pp.pprint(get_instance_vals(fb2.description.title_info))
-pp.pprint(get_instance_vals(fb2.description.document_info))
-pp.pprint(get_instance_vals(fb2.description.publish_info))
-pp.pprint(get_instance_vals(fb2.description.custom_info))
-pp.pprint(get_instance_vals(fb2.body))
+    pp.pprint(get_instance_vals(fb2.description.title_info))
+    pp.pprint(get_instance_vals(fb2.description.document_info))
+    pp.pprint(get_instance_vals(fb2.description.publish_info))
+    pp.pprint(get_instance_vals(fb2.description.custom_info))
+    pp.pprint(get_instance_vals(fb2.body))
+
+
+if __name__ == "__main__":
+    start_gui()

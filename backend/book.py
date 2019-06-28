@@ -155,7 +155,7 @@ class FB2Body(FB2ParserMixin):
                 self.table_of_contents.append((' '.join(self.element_to_string(title)).strip(), section))
 
 
-class FB2BookClass:
+class FB2Book:
     _description_class = FB2Description
     _body_class = FB2Body
     _binary_class = None
