@@ -160,8 +160,22 @@ class FB2Book:
     _body_class = FB2Body
     _binary_class = None
 
-    def __init__(self, file_name):
-        self.book_etree = etree.parse(file_name)
+    def __init__(self, file_path=None):
+        self.book_etree = None
+        self._namespace = None
+        self.description = None
+        self.body = None
+
+        if file_path:
+            self.load(file_path)
+
+    def load(self, file_path):
+        try:
+            self.book_etree = etree.parse(file_path)
+        except Exception as e:
+            print(e)
+            return
+
         self._namespace = self.book_etree.getroot().nsmap[None]
 
         self.description = self._description_class(self._namespace)
