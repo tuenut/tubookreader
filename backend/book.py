@@ -35,9 +35,6 @@ class FB2Body(FB2BodyParser):
     def get_sections(self):
         return json.dumps(self.table_of_contents)
 
-# TODO убрать классы из атрибутов, сделать создание объектов FB2Body и прочих сразу в __init__ и переделать
-#  соответствующие классы, для возможности переиспользования одного объекта.
-
 
 class FB2Book:
     # TODO _binary_class = None сделать binary блок из fb2 (картинки, etc)

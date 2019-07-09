@@ -1,0 +1,24 @@
+{
+  "name": "tubookreader",
+  "version": "0.0.1",
+  "main": "main.js",
+  "description": "fb2 reader",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuenut/tubookreader.git"
+  },
+  "author": "tuenut",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tuenut/tubookreader/issues"
+  },
+  "homepage": "https://github.com/tuenut/tubookreader#readme",
+  "devDependencies": {
+    "electron": "^5.0.6",
+    "jquery": "^3.4.1"
+  }
+}

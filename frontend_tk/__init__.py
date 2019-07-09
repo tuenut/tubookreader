@@ -1,15 +1,16 @@
 import tkinter as tk
 
+from defaults import TITLE, TITLE_PATTERN
 from tk_frontend.bookframe import BookFrame
 from backend import FB2Book
 from locals import TEST_BOOK
 
 
 class Application(tk.Tk):
-    def __init__(self, title=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title(title)
+        self.title(TITLE)
         self.geometry("%sx%s" % (800, 600))
 
         frame = tk.Frame(self, bg='grey', border=4, relief=tk.FLAT)

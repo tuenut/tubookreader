@@ -1,14 +1,15 @@
 import wx
 
+from defaults import TITLE, TITLE_PATTERN
 from wx_frontend.bookview import BookView
 from wx_frontend.menubar import MenuBar
 from .guischemas import MENUBAR_SCHEMA
 
 
-class MainWindow(wx.Frame):
-    TITLE = 'TubookReader'
-    TITLE_PATTERN = '%s [%s]'
+__all__ = ['MainWindow']
 
+
+class MainWindow(wx.Frame):
     def __init__(self, parent, title=TITLE, *args, **kwargs):
         super().__init__(parent, title=title, size=(800, 600), *args, **kwargs)
         self.current_file_path = None
@@ -48,6 +49,6 @@ class MainWindow(wx.Frame):
 
     def __action_set_title(self):
         if self.current_file_path:
-            self.SetTitle(self.TITLE_PATTERN % (self.TITLE, self.current_file_path))
+            self.SetTitle(TITLE_PATTERN % (TITLE, self.current_file_path))
         else:
-            self.SetTitle(self.TITLE)
+            self.SetTitle(TITLE)

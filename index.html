@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <script>require('./render.js')</script>
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script>
+        (function ($) {
+            $.fn.test_click = function () {
+                this.click(function () {
+                    $('<p>', {}).text('HELLO AGAIN!').appendTo($('body'))
+                })
+            };
+        }(jQuery))
+
+        $(document).ready(function () {
+            $('#testButton').test_click()
+        })
+    </script>
+</head>
+<body>
+<button id="testButton" class="btn btn-primary">BUTTON</button>
+</body>
+</html>

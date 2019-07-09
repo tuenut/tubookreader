@@ -16,16 +16,10 @@ class BookView(wx.Panel):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(hbox)
 
-        self.splitter = wx.SplitterWindow(self, wx.SPLIT_VERTICAL, style=wx.SP_BORDER|wx.SP_LIVE_UPDATE, size=(100,-1))
-        self.splitter.SetMinimumPaneSize(200)
-        self.splitter.FitInside()
-
         self.__init_table_of_contents()
-        self.__init_book_view()
+        # self.__init_book_view()
 
-        self.splitter.SplitVertically(self.table_of_contents, self.book_content)
-
-        hbox.Add(self.splitter, wx.ID_ANY, flag=wx.EXPAND | wx.ALL)
+        hbox.Add(self.table_of_contents, wx.ID_ANY, flag=wx.EXPAND | wx.ALL)
 
         self.book = FB2Book()
 
@@ -39,10 +33,10 @@ class BookView(wx.Panel):
                                                    style=wx.ALIGN_LEFT)
             table_of_contents_text.SetFont(wx.Font())
 
-            self.table_of_contents_vbox.Add(table_of_contents_text, wx.ID_ANY, flag=wx.EXPAND | wx.ALL)
+            self.table_of_contents_vbox.Add(table_of_contents_text, wx.ID_ANY,)
 
     def __init_book_view(self):
-        self.book_content = wx.ScrolledWindow(self.splitter, wx.ID_ANY,)
+        self.book_content = wx.ScrolledWindow(self, wx.ID_ANY,)
         self.book_content.SetScrollbars(1, 1, 1, 1)
         self.book_content.SetBackgroundColour('#999999')
 
@@ -55,7 +49,7 @@ class BookView(wx.Panel):
         hbox.Add(self.book_content_text, 1)
 
     def __init_table_of_contents(self):
-        self.table_of_contents = wx.ScrolledWindow(self.splitter, wx.ID_ANY)
+        self.table_of_contents = wx.ScrolledWindow(self, wx.ID_ANY)
         self.table_of_contents.SetScrollbars(1, 1, 1, 1)
         self.table_of_contents.SetBackgroundColour('#ffffff')
 
