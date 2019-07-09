@@ -1,7 +1,7 @@
 import wx
 
-from frontend.bookview import BookView
-from frontend.menubar import MenuBar
+from wx_frontend.bookview import BookView
+from wx_frontend.menubar import MenuBar
 from .guischemas import MENUBAR_SCHEMA
 
 

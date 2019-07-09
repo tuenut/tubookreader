@@ -1,3 +1,4 @@
 locals.py
 venv/
 .idea/
+node_modules/
